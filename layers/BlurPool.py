@@ -4,28 +4,27 @@
 
 
 import numpy as np
-from keras.layers import Layer
-from keras import backend as K
 import tensorflow as tf
-import keras
+from tensorflow.keras import layers
 
 
 # --------------------------------------------------------------------------------------------
 # CLASS DEFINITIONS
-# REFERENCE 1: https://github.com/csvance/blur-pool-keras
-# REFERENCE 2: https://arxiv.org/abs/1904.11486
+# https://github.com/csvance/blur-pool-keras
+# https://arxiv.org/abs/1904.11486
 # --------------------------------------------------------------------------------------------
 
 
-class MaxBlurPooling2D(Layer):
+class MaxBlurPooling2D(layers.Layer):
 
     def __init__(self, pool_size: int = 2, kernel_size: int = 3, **kwargs):
         
+        super(MaxBlurPooling2D, self).__init__(**kwargs)
+
         self.pool_size = pool_size
         self.blur_kernel = None
         self.kernel_size = kernel_size
-
-        super(MaxBlurPooling2D, self).__init__(**kwargs)
+        
 
     def build(self, input_shape):
 
@@ -54,7 +53,7 @@ class MaxBlurPooling2D(Layer):
         bk = np.repeat(bk, input_shape[3])
 
         bk = np.reshape(bk, (self.kernel_size, self.kernel_size, input_shape[3], 1))
-        blur_init = keras.initializers.constant(bk)
+        blur_init = tf.keras.initializers.constant(bk)
 
         self.blur_kernel = self.add_weight(name='blur_kernel',
                                            shape=(self.kernel_size, self.kernel_size, input_shape[3], 1),
@@ -63,19 +62,22 @@ class MaxBlurPooling2D(Layer):
 
         super(MaxBlurPooling2D, self).build(input_shape)  # Be sure to call this at the end
 
+
     def call(self, x):
 
         x = tf.nn.pool(x, (self.pool_size, self.pool_size), strides=(1, 1), padding='SAME', pooling_type='MAX', data_format='NHWC')
-        x = K.depthwise_conv2d(x, self.blur_kernel, padding='same', strides=(self.pool_size, self.pool_size))
+        x = tf.nn.depthwise_conv2d(x, self.blur_kernel, padding='same', strides=(self.pool_size, self.pool_size))
 
         return x
+
 
     def compute_output_shape(self, input_shape):
         
         return input_shape[0], int(np.ceil(input_shape[1] / 2)), int(np.ceil(input_shape[2] / 2)), input_shape[3]
 
 
-class AverageBlurPooling2D(Layer):
+class AverageBlurPooling2D(layers.Layer):
+
 
     def __init__(self, pool_size: int = 2, kernel_size: int = 3, **kwargs):
         
@@ -85,6 +87,7 @@ class AverageBlurPooling2D(Layer):
 
         super(AverageBlurPooling2D, self).__init__(**kwargs)
 
+
     def build(self, input_shape):
 
         if self.kernel_size == 3:
@@ -112,7 +115,7 @@ class AverageBlurPooling2D(Layer):
         bk = np.repeat(bk, input_shape[3])
 
         bk = np.reshape(bk, (self.kernel_size, self.kernel_size, input_shape[3], 1))
-        blur_init = keras.initializers.constant(bk)
+        blur_init = tf.keras.initializers.constant(bk)
 
         self.blur_kernel = self.add_weight(name='blur_kernel',
                                            shape=(self.kernel_size, self.kernel_size, input_shape[3], 1),
@@ -121,20 +124,23 @@ class AverageBlurPooling2D(Layer):
 
         super(AverageBlurPooling2D, self).build(input_shape)  # Be sure to call this at the end
 
+
     def call(self, x):
 
         x = tf.nn.pool(x, (self.pool_size, self.pool_size), strides=(1, 1), padding='SAME', pooling_type='AVG', data_format='NHWC')
-        x = K.depthwise_conv2d(x, self.blur_kernel, padding='same', strides=(self.pool_size, self.pool_size))
+        x = tf.nn.depthwise_conv2d(x, self.blur_kernel, padding='same', strides=(self.pool_size, self.pool_size))
 
         return x
+
 
     def compute_output_shape(self, input_shape):
         
         return input_shape[0], int(np.ceil(input_shape[1] / 2)), int(np.ceil(input_shape[2] / 2)), input_shape[3]
 
 
-class BlurPool2D(Layer):
+class BlurPool2D(layers.Layer):
     
+
     def __init__(self, pool_size: int = 2, kernel_size: int = 3, **kwargs):
     
         self.pool_size = pool_size
@@ -142,6 +148,7 @@ class BlurPool2D(Layer):
         self.kernel_size = kernel_size
 
         super(BlurPool2D, self).__init__(**kwargs)
+
 
     def build(self, input_shape):
 
@@ -170,7 +177,7 @@ class BlurPool2D(Layer):
         bk = np.repeat(bk, input_shape[3])
 
         bk = np.reshape(bk, (self.kernel_size, self.kernel_size, input_shape[3], 1))
-        blur_init = keras.initializers.constant(bk)
+        blur_init = tf.keras.initializers.constant(bk)
 
         self.blur_kernel = self.add_weight(name='blur_kernel',
                                            shape=(self.kernel_size, self.kernel_size, input_shape[3], 1),
@@ -179,11 +186,13 @@ class BlurPool2D(Layer):
 
         super(BlurPool2D, self).build(input_shape)  # Be sure to call this at the end
 
+
     def call(self, x):
         
-        x = K.depthwise_conv2d(x, self.blur_kernel, padding='same', strides=(self.pool_size, self.pool_size))
+        x = tf.nn.depthwise_conv2d(x, self.blur_kernel, padding='same', strides=(self.pool_size, self.pool_size))
 
         return x
+
 
     def compute_output_shape(self, input_shape):
         

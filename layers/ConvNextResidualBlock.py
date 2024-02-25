@@ -8,6 +8,7 @@ from tensorflow import keras
 from .SqueezeAndExcitation import SqueezeAndExcitation
 import tensorflow as tf
 import tensorflow_probability as tfp
+from ..utils.padding import CircularPad
 
 
 # --------------------------------------------------------------------------------------------
@@ -21,16 +22,19 @@ bias_initial = tf.keras.initializers.Constant(value=0)
 
 # --------------------------------------------------------------------------------------------
 # CLASS DEFINITIONS
+# https://arxiv.org/pdf/2201.03545.pdf
 # -------------------------------------------------------------------------------------------- 
 
 
 class StochasticDepthResidual(layers.Layer):
+
 
     def __init__(self, rate=0.5, **kwargs):
 
         super().__init__(**kwargs)
         self.rate = rate
         self.survival_probability = 1.0 - self.rate
+
 
     def call(self, x, training=None):
 
@@ -52,6 +56,7 @@ class StochasticDepthResidual(layers.Layer):
         else:
 
             return shortcut + self.survival_probability * residual
+
 
     def get_config(self):
 
@@ -78,14 +83,19 @@ class ResidualBlock(layers.Layer):
 
         # Feature extraction
         self.layers = tf.keras.Sequential([
-            layers.Conv2D(self.num_filters, kernel_size=7, padding="same", groups=num_filters, kernel_initializer=kernel_initial,
-                          bias_initializer=bias_initial, name = self.name_layer + "_conv2d_7"),
+            CircularPad(),
+            layers.Conv2D(self.num_filters, kernel_size = 7, groups = num_filters, kernel_initializer = kernel_initial,
+                          bias_initializer = bias_initial, name = self.name_layer + "_conv2d_7"),
             layers.LayerNormalization(name = self.name_layer + "_layernorm"),
-            layers.Conv2D(self.num_filters * 4, kernel_size=1, padding="valid", kernel_initializer=kernel_initial, 
-                          bias_initializer=bias_initial, name = self.name_layer + "_conv2d_4"),
+
+            CircularPad(),
+            layers.Conv2D(self.num_filters * 4, kernel_size = 1, kernel_initializer = kernel_initial, 
+                          bias_initializer = bias_initial, name = self.name_layer + "_conv2d_4"),
             layers.Activation('gelu', name = self.name_layer + "_activation"),
-            layers.Conv2D(self.num_filters, kernel_size=1, padding="valid", kernel_initializer=kernel_initial, 
-                          bias_initializer=bias_initial, name = self.name_layer + "_conv2d_output")
+
+            CircularPad(),
+            layers.Conv2D(self.num_filters, kernel_size = 1, kernel_initializer = kernel_initial, 
+                          bias_initializer = bias_initial, name = self.name_layer + "_conv2d_output")
         ], name = f"Sequential_Residual_{self.name_layer}")
         
         self.layer_scale_gamma = None
@@ -110,7 +120,7 @@ class ResidualBlock(layers.Layer):
         # SE blocks
         x = self.se_block(x)
 
-        # Regularization
+        # Residual + Regularization 
         x = self.stochastic_depth([inputs, x])
         
         return x
