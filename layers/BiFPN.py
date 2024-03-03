@@ -23,7 +23,7 @@ class BiFPN(layers.Layer):
         super(BiFPN, self).__init__()
         
         # Parameters
-        self.activation = tf.keras.activations.relu #tf.keras.activations.swish # NO TOCAR, POR LA MADRE QUE ME TRAJO
+        self.activation = tf.keras.activations.relu
         self.W_bifpn = W_bifpn
         self.EPSILON = EPSILON
         self.name_layer = name
