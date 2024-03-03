@@ -6,13 +6,14 @@
 from tensorflow.keras import layers
 from tensorflow import keras
 from .SqueezeAndExcitation import SqueezeAndExcitation
+from .CBAM import CBAM
 import tensorflow as tf
 import tensorflow_probability as tfp
 from ..utils.padding import CircularPad
 
 
 # --------------------------------------------------------------------------------------------
-# SETS THE SEED OF THE RANDOM NUMBER GENERATOR
+# KERNEL AND BIAS INITIALIZATION
 # --------------------------------------------------------------------------------------------
 
 
@@ -29,7 +30,7 @@ bias_initial = tf.keras.initializers.Constant(value=0)
 class StochasticDepthResidual(layers.Layer):
 
 
-    def __init__(self, rate=0.5, **kwargs):
+    def __init__(self, rate = 0.25, **kwargs):
 
         super().__init__(**kwargs)
         self.rate = rate
@@ -68,7 +69,8 @@ class StochasticDepthResidual(layers.Layer):
 
 class ResidualBlock(layers.Layer):
     
-    def __init__(self, name, num_filters, drop_prob=0.1, layer_scale_init_value=1e-6):
+    
+    def __init__(self, name, num_filters, drop_prob = 0.25, layer_scale_init_value = 1e-6, use_cbam = False):
         
         super(ResidualBlock, self).__init__()
         
@@ -78,22 +80,23 @@ class ResidualBlock(layers.Layer):
         self.drop_prob = drop_prob
         self.layer_scale_init_value = layer_scale_init_value
         
-        # SE blocks
-        self.se_block = SqueezeAndExcitation(name = self.name_layer + f"_se_input", num_filters = self.num_filters)
+        # We can use SE o CBAM, CBAM can be seen as an enhanced version of SE that tends to be more GPU friendly
+        # and that not only models attention at the channel level but also at the spatial level.
+        self.attention = SqueezeAndExcitation(name = self.name_layer + f"_se_input", num_filters = self.num_filters) if not use_cbam else CBAM(name = self.name_layer + "_CBAM")
 
         # Feature extraction
         self.layers = tf.keras.Sequential([
-            CircularPad(),
+            CircularPad(padding = (1, 1, 1, 1)),
             layers.Conv2D(self.num_filters, kernel_size = 7, groups = num_filters, kernel_initializer = kernel_initial,
                           bias_initializer = bias_initial, name = self.name_layer + "_conv2d_7"),
             layers.LayerNormalization(name = self.name_layer + "_layernorm"),
 
-            CircularPad(),
+            CircularPad(padding = (1, 1, 1, 1)),
             layers.Conv2D(self.num_filters * 4, kernel_size = 1, kernel_initializer = kernel_initial, 
                           bias_initializer = bias_initial, name = self.name_layer + "_conv2d_4"),
             layers.Activation('gelu', name = self.name_layer + "_activation"),
 
-            CircularPad(),
+            CircularPad(padding = (1, 1, 1, 1)),
             layers.Conv2D(self.num_filters, kernel_size = 1, kernel_initializer = kernel_initial, 
                           bias_initializer = bias_initial, name = self.name_layer + "_conv2d_output")
         ], name = f"Sequential_Residual_{self.name_layer}")
@@ -108,6 +111,7 @@ class ResidualBlock(layers.Layer):
 
         self.stochastic_depth = StochasticDepthResidual(self.drop_prob)
 
+
     def call(self, inputs):
         
         # Feature extraction inputs
@@ -117,8 +121,8 @@ class ResidualBlock(layers.Layer):
             
             x = x * self.layer_scale_gamma
         
-        # SE blocks
-        x = self.se_block(x)
+        # SE or CBAM block
+        x = self.attention(x)
 
         # Residual + Regularization 
         x = self.stochastic_depth([inputs, x])

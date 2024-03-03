@@ -17,17 +17,14 @@ from tensorflow.keras import layers
 class SpatialPyramidPooling(layers.Layer):
 
 
-    def __init__(self, pool_list, **kwargs):
+    def __init__(self, pool_list, activation = 'gelu', **kwargs):
 
         super(SpatialPyramidPooling, self).__init__(**kwargs)
 
         self.pool_list = pool_list
         self.num_outputs_per_channel = sum([i * i for i in pool_list])
-
-        
-    def build(self, input_shape):
-
-        self.nb_channels = input_shape[3]
+        self.norm = layers.LayerNormalization()
+        self.activation = layers.Activation(activation)
 
 
     def get_config(self):
@@ -41,11 +38,9 @@ class SpatialPyramidPooling(layers.Layer):
     def call(self, x, mask=None):
 
         input_shape = tf.shape(x)
-        num_rows = input_shape[1]
-        num_cols = input_shape[2]
 
-        row_length = [tf.cast(num_rows, 'float32') / i for i in self.pool_list]
-        col_length = [tf.cast(num_cols, 'float32') / i for i in self.pool_list]
+        row_length = [tf.cast(input_shape[1], 'float32') / i for i in self.pool_list]
+        col_length = [tf.cast(input_shape[2], 'float32') / i for i in self.pool_list]
 
         outputs = []
 
@@ -74,4 +69,4 @@ class SpatialPyramidPooling(layers.Layer):
 
         outputs = tf.concat(outputs, axis = 1)
 
-        return outputs
+        return self.activation(self.norm(outputs))
