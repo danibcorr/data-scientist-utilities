@@ -155,15 +155,15 @@ class GLAM(layers.Layer):
         
         if use_cbam_local_attention == False:
 		
-		# GLAM Local Attention Implementation
-		self.local_channel_att = LocalChannelAttention(in_channels, kernel_size)
-		self.local_spatial_att = LocalSpatialAttention(in_channels, num_reduced_channels)
-	
-	else:
-		
-		# CBAM Local Attention Implementation
-		self.local_channel_att = ChannelAttentionModule("GLAM_" + name)
-		self.local_spatial_att = SpatialAttentionModule("GLAM_" + name)
+            # GLAM Local Attention Implementation
+            self.local_channel_att = LocalChannelAttention(in_channels, kernel_size)
+            self.local_spatial_att = LocalSpatialAttention(in_channels, num_reduced_channels)
+        
+        else:
+            
+            # CBAM Local Attention Implementation
+            self.local_channel_att = ChannelAttentionModule("GLAM_" + name)
+            self.local_spatial_att = SpatialAttentionModule("GLAM_" + name)
 
         # GLAM Global Attention Implementation
         self.global_channel_att = GlobalChannelAttention(in_channels, kernel_size)
@@ -178,13 +178,13 @@ class GLAM(layers.Layer):
         
         if use_cbam_local_attention == False:
         
-		# GLAM Implementation              
-		local_att = self.local_spatial_att(x, local_channel_att)  
+            # GLAM Implementation              
+            local_att = self.local_spatial_att(x, local_channel_att)  
         
         else:
         
-		# CBAM Implementation       
-		local_att = (local_channel_att * self.local_spatial_att(x)) + local_channel_att  
+            # CBAM Implementation       
+            local_att = (local_channel_att * self.local_spatial_att(x)) + local_channel_att  
 
         global_channel_att = self.global_channel_att(x)                 
         global_att = self.global_spatial_att(x, global_channel_att)
