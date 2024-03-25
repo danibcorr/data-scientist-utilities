@@ -4,6 +4,7 @@
 
 
 from tensorflow.keras import layers
+from tensorflow import keras
 import tensorflow as tf
 from ..utils.padding import CircularPad
 
@@ -14,6 +15,7 @@ from ..utils.padding import CircularPad
 # --------------------------------------------------------------------------------------------
 
 
+@keras.saving.register_keras_serializable(package = 'MaxMinImportance')
 class MaxMinImportance(layers.Layer):
 
 
@@ -27,16 +29,25 @@ class MaxMinImportance(layers.Layer):
         self.p1 = self.add_weight(self.name_layer + "p1", shape = (), initializer = 'ones', trainable = True, constraint = lambda x: tf.clip_by_value(x, 0, 1))
 
 
+    def get_config(self):
+
+        return {'name': self.name_layer}
+
+
     def call(self, inputs):
 
         maxpool, minpool = inputs
 
+        # Calcular la proporción cuadrada de self.p0 en relación con la suma de los cuadrados de self.p0 y self.p1.
+        # Para calcular proporciones
+        # Calcular lambda y 1 - lambda
         lambda_val = self.p0 ** 2 / (self.p0 ** 2 + self.p1 ** 2)
         one_minus_lambda = self.p1 ** 2 / (self.p0 ** 2 + self.p1 ** 2)
 
         return lambda_val * maxpool + one_minus_lambda * minpool
 
 
+@keras.saving.register_keras_serializable(package = 'GlobalMinPooling2D')
 class GlobalMinPooling2D(layers.Layer):
 
 
@@ -50,6 +61,7 @@ class GlobalMinPooling2D(layers.Layer):
         return tf.reduce_min(inputs, axis = [1, 2])
 
 
+@keras.saving.register_keras_serializable(package = 'ChannelAttentionModule')
 class ChannelAttentionModule(layers.Layer):
 
 
@@ -58,7 +70,7 @@ class ChannelAttentionModule(layers.Layer):
         super(ChannelAttentionModule, self).__init__()
 
         self.name_layer = name
-
+        self.use_min = use_min
         self.ratio = ratio
 
         self.l1 = None
@@ -69,6 +81,11 @@ class ChannelAttentionModule(layers.Layer):
         self.mmi = MaxMinImportance(name = f"MMI_CAM_{name}")
 
         self.activation = layers.Activation('sigmoid', name = f"Activation_CAM_{name}")
+
+
+    def get_config(self):
+
+        return {'name': self.name_layer, 'use_min': self.use_min, 'ratio': self.ratio}
 
 
     def build(self, input_shape):
@@ -90,6 +107,7 @@ class ChannelAttentionModule(layers.Layer):
         return layers.Multiply()([inputs, concat])
 
 
+@keras.saving.register_keras_serializable(package = 'SpatialAttentionModule')
 class SpatialAttentionModule(layers.Layer):
 
 
@@ -98,11 +116,15 @@ class SpatialAttentionModule(layers.Layer):
         super(SpatialAttentionModule, self).__init__()
 
         self.name_layer = name
-
         self.use_min = use_min
 
         self.padding = CircularPad((3, 3, 3, 3))
         self.conv = layers.Conv2D(1, kernel_size = 7, activation = 'sigmoid', name = f"Conv2D_SAM_{name}")
+
+
+    def get_config(self):
+
+        return {'name': self.name_layer, 'use_min': use_min}
 
 
     def call(self, inputs):
@@ -120,6 +142,7 @@ class SpatialAttentionModule(layers.Layer):
         return layers.Multiply()([inputs, conv])
 
 
+@keras.saving.register_keras_serializable(package = 'CBAM')
 class CBAM(layers.Layer):
 
 
@@ -127,10 +150,30 @@ class CBAM(layers.Layer):
 
         super(CBAM, self).__init__()
         
+        self.name_layer = name
+        self.use_min = use_min
+
         self.channel_attention = ChannelAttentionModule(name, use_min)
         self.spatial_attention = SpatialAttentionModule(name, use_min)
 
 
+    def get_config(self):
+
+        return {'name': self.name_layer, 'use_min': self.use_min}
+
+
     def call(self, inputs):
 
-        return self.spatial_attention(self.channel_attention(inputs))
+        local_channel_att = self.channel_attention(inputs)
+        local_spatial_att = self.spatial_attention(inputs)
+        local_att = (local_channel_att * local_spatial_att) + local_channel_att  
+
+        local_att = tf.expand_dims(local_att, axis = -1) 
+        x = tf.expand_dims(inputs, axis = -1) 
+
+        all_feature_maps = tf.concat([local_att, x], axis = -1)
+
+        weights = tf.reshape(tf.nn.softmax(self.fusion_weights, axis = -1), (1, 1, 1, 1, 2))
+        fused_feature_maps = tf.reduce_sum(all_feature_maps * weights, axis = -1)
+
+        return fused_feature_maps

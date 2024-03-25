@@ -4,6 +4,7 @@
 
 
 import tensorflow as tf
+from tensorflow import keras
 from tensorflow.keras import layers
 from .APS import CircularPad
 from .CBAM import GlobalMinPooling2D, ChannelAttentionModule, SpatialAttentionModule
@@ -11,6 +12,7 @@ from .CBAM import GlobalMinPooling2D, ChannelAttentionModule, SpatialAttentionMo
 
 # --------------------------------------------------------------------------------------------
 # CLASS DEFINITIONS
+# https://arxiv.org/abs/2107.08000
 # --------------------------------------------------------------------------------------------
 
 

@@ -4,6 +4,7 @@
 
 
 import tensorflow as tf
+from tensorflow import keras
 from tensorflow.keras import layers
 
 
@@ -14,25 +15,24 @@ from tensorflow.keras import layers
 # --------------------------------------------------------------------------------------------
 
 
+@keras.saving.register_keras_serializable(package = 'SPP')
 class SpatialPyramidPooling(layers.Layer):
 
 
-    def __init__(self, pool_list, activation = 'gelu', **kwargs):
+    def __init__(self, name, pool_list, **kwargs):
 
         super(SpatialPyramidPooling, self).__init__(**kwargs)
 
+        self.name_layer = name
         self.pool_list = pool_list
         self.num_outputs_per_channel = sum([i * i for i in pool_list])
-        self.norm = layers.LayerNormalization()
-        self.activation = layers.Activation(activation)
+        self.norm = layers.LayerNormalization(name = self.name_layer + "_layernorm")
+        self.activation = layers.Activation('gelu', name = self.name_layer + "_activation")
 
 
     def get_config(self):
 
-        config = {'pool_list': self.pool_list}
-        base_config = super(SpatialPyramidPooling, self).get_config()
-
-        return dict(list(base_config.items()) + list(config.items()))
+        return {'name': self.name_layer, 'pool_list': self.pool_list}
 
 
     def call(self, x, mask=None):

@@ -12,9 +12,11 @@ from tensorflow import keras
 
 # --------------------------------------------------------------------------------------------
 # CLASS DEFINITIONS
+# https://arxiv.org/abs/1911.09070
 # --------------------------------------------------------------------------------------------
 
 
+@keras.saving.register_keras_serializable(package = 'BiFPN')
 class BiFPN(layers.Layer):
     
 
@@ -23,16 +25,22 @@ class BiFPN(layers.Layer):
         super(BiFPN, self).__init__()
         
         # Parameters
-        self.activation = tf.keras.activations.relu
+        self.name_layer = name
         self.W_bifpn = W_bifpn
         self.EPSILON = EPSILON
-        self.name_layer = name
+        self.kernel_size_convs = kernel_size_convs
+
+        # Activation function
+        # In my case I have tried to use functions like GeLU or ReLU but I get numerical instability after a while. 
+        # I have tried clipping the gradients and adding additional regularization techniques but they did not work.
+        self.activation = tf.keras.activations.swish
         
         # LayerNormalization
         self.layernorms = [layers.LayerNormalization(name = self.name_layer + '_layernorm_' + str(i)) for i in range(4)]
         
         # Methods to apply up or down sampling
-        self.upsamplings = [layers.UpSampling2D(size = (2, 2), interpolation = 'nearest', name = self.name_layer + '_upsampling_' + str(i)) for i in range(2)]
+        self.upsamplings = [layers.Conv2DTranspose(filters = self.W_bifpn, kernel_size = 2, strides = 2,
+                                                    padding = 'same', name = self.name_layer + '_upsampling_' + str(i)) for i in range(2)]
         self.downsamplings = [APSDownsampling(filtros = self.W_bifpn) for i in range(2)]
 
         # Adjust the number of channels
@@ -40,7 +48,7 @@ class BiFPN(layers.Layer):
                                        name = self.name_layer + '_conv1x1_' + str(i)) for i in range(3)]
 
         # Circular padding
-        self.padding = CircularPad()
+        self.padding = CircularPad(padding = (1, 1, 1, 1))
 
         # Conv2D for BiFPN -> Feature extraction from the backbone
         self.conv2_td = layers.SeparableConv2D(filters = self.W_bifpn, kernel_size = kernel_size_convs, name = self.name_layer + "_conv2_td")
@@ -60,11 +68,16 @@ class BiFPN(layers.Layer):
         self.w24 = self.add_weight(self.name_layer + "W24", shape = [1, 1, 1, 1], initializer = tf.initializers.he_normal(), trainable = True)
 
 
+    def get_config(self):
+
+        return {'name': self.name_layer, 'W_bifpn': self.W_bifpn, 'EPSILON': self.EPSILON, 'kernel_size_convs': self.kernel_size_convs}
+
+
     def call(self, p1, p2, p3):
 
         """
         In this example we have only used 3 levels of hierarchy in the BackBone used,
-        this may vary depending on the depth of the model/requirement
+        this may vary depending on the depth of the model/requirement.
         """
 
         # Set all features to the same number of channels
@@ -91,6 +104,7 @@ class BiFPN(layers.Layer):
         return P_1_out, P_2_out, P_3_out
 
 
+@keras.saving.register_keras_serializable(package = 'WeightedSum')
 class WeightedSum(layers.Layer):
 
     """
@@ -104,10 +118,15 @@ class WeightedSum(layers.Layer):
 
         self.num_outputs = num_outputs
 
+    
+    def get_config(self):
+
+        return {'num_outputs': self.num_outputs}
+
 
     def build(self, input_shape):
 
-        # Initialize weights to 1/num_outputs so that initial sum is 1
+        # Inicializar los pesos a 1/num_outputs para que la suma inicial sea 1
         self.pesos = self.add_weight(shape=(self.num_outputs,), initializer = 'ones', trainable = True)
 
 
@@ -117,6 +136,6 @@ class WeightedSum(layers.Layer):
 
             raise ValueError('A WeightedSum layer should be called on a list of inputs.')
 
-        weighted_inputs = tf.stack(inputs) * tf.reshape(self.pesos, [self.num_outputs, 1, 1])
+        weighted_inputs = tf.stack(inputs) * tf.reshape(tf.nn.softmax(self.pesos), [self.num_outputs, 1, 1])
 
         return tf.reduce_sum(weighted_inputs, axis = 0)

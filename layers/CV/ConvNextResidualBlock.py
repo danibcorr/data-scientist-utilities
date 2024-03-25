@@ -24,6 +24,7 @@ bias_initial = tf.keras.initializers.Constant(value=0)
 # --------------------------------------------------------------------------------------------
 # CLASS DEFINITIONS
 # https://arxiv.org/pdf/2201.03545.pdf
+# https://keras.io/api/keras_cv/layers/regularization/stochastic_depth/
 # -------------------------------------------------------------------------------------------- 
 
 
@@ -41,22 +42,13 @@ class StochasticDepthResidual(layers.Layer):
 
         if len(x) != 2:
 
-            raise ValueError(
-                f"""Input must be a list of length 2. """
-                f"""Got input with length={len(x)}."""
-            )
+            raise ValueError(f"""Input must be a list of length 2, got input with length={len(x)}.""")
 
         shortcut, residual = x
 
         b_l = keras.backend.random_bernoulli([], p=self.survival_probability)
 
-        if training:
-
-            return shortcut + b_l * residual
-
-        else:
-
-            return shortcut + self.survival_probability * residual
+        return shortcut + b_l * residual if training else shortcut + self.survival_probability * residual
 
 
     def get_config(self):
@@ -67,6 +59,7 @@ class StochasticDepthResidual(layers.Layer):
         return dict(list(base_config.items()) + list(config.items()))
 
 
+@keras.saving.register_keras_serializable(package = 'ResidualBlock')
 class ResidualBlock(layers.Layer):
     
     
@@ -79,6 +72,7 @@ class ResidualBlock(layers.Layer):
         self.num_filters = num_filters
         self.drop_prob = drop_prob
         self.layer_scale_init_value = layer_scale_init_value
+        self.use_cbam = use_cbam
         
         # We can use SE o CBAM, CBAM can be seen as an enhanced version of SE that tends to be more GPU friendly
         # and that not only models attention at the channel level but also at the spatial level.
@@ -110,6 +104,12 @@ class ResidualBlock(layers.Layer):
                 self.layer_scale_gamma = tf.Variable(name = self.name_layer + "_gamma", initial_value=self.layer_scale_init_value * tf.ones((self.num_filters)))
 
         self.stochastic_depth = StochasticDepthResidual(self.drop_prob)
+
+
+    def get_config(self):
+
+        return {'name': self.name_layer, 'num_filters': self.num_filters, 'drop_prob': self.drop_prob, 'layer_scale_init_value': self.layer_scale_init_value,
+                'use_cbam': self.use_cbam}
 
 
     def call(self, inputs):

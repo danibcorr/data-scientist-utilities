@@ -5,6 +5,7 @@
 
 import numpy as np
 import tensorflow as tf
+from tensorflow import keras
 from tensorflow.keras import layers
 
 
@@ -15,6 +16,7 @@ from tensorflow.keras import layers
 # --------------------------------------------------------------------------------------------
 
 
+@keras.saving.register_keras_serializable(package = 'MaxBlurPooling2D')
 class MaxBlurPooling2D(layers.Layer):
 
     def __init__(self, pool_size: int = 2, kernel_size: int = 3, **kwargs):
@@ -25,6 +27,11 @@ class MaxBlurPooling2D(layers.Layer):
         self.blur_kernel = None
         self.kernel_size = kernel_size
         
+    
+    def get_config(self):
+
+        return {'pool_size': self.pool_size, 'kernel_size': self.kernel_size}
+
 
     def build(self, input_shape):
 
@@ -76,6 +83,7 @@ class MaxBlurPooling2D(layers.Layer):
         return input_shape[0], int(np.ceil(input_shape[1] / 2)), int(np.ceil(input_shape[2] / 2)), input_shape[3]
 
 
+@keras.saving.register_keras_serializable(package = 'AverageBlurPooling2D')
 class AverageBlurPooling2D(layers.Layer):
 
 
@@ -86,6 +94,11 @@ class AverageBlurPooling2D(layers.Layer):
         self.kernel_size = kernel_size
 
         super(AverageBlurPooling2D, self).__init__(**kwargs)
+
+
+    def get_config(self):
+
+        return {'pool_size': self.pool_size, 'kernel_size': self.kernel_size}
 
 
     def build(self, input_shape):
@@ -138,6 +151,7 @@ class AverageBlurPooling2D(layers.Layer):
         return input_shape[0], int(np.ceil(input_shape[1] / 2)), int(np.ceil(input_shape[2] / 2)), input_shape[3]
 
 
+@keras.saving.register_keras_serializable(package = 'BlurPool2D')
 class BlurPool2D(layers.Layer):
     
 
@@ -149,6 +163,11 @@ class BlurPool2D(layers.Layer):
 
         super(BlurPool2D, self).__init__(**kwargs)
 
+
+    def get_config(self):
+
+        return {'pool_size': self.pool_size, 'kernel_size': self.kernel_size}
+        
 
     def build(self, input_shape):
 
