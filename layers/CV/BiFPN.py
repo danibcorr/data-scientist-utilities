@@ -126,8 +126,8 @@ class WeightedSum(layers.Layer):
 
     def build(self, input_shape):
 
-        # Inicializar los pesos a 1/num_outputs para que la suma inicial sea 1
-        self.pesos = self.add_weight(shape=(self.num_outputs,), initializer = 'ones', trainable = True)
+        # Initialize weights to 1/num_outputs so that initial sum is 1
+        self.weights = self.add_weight(shape=(self.num_outputs,), initializer = 'ones', trainable = True)
 
 
     def call(self, inputs):
@@ -136,6 +136,6 @@ class WeightedSum(layers.Layer):
 
             raise ValueError('A WeightedSum layer should be called on a list of inputs.')
 
-        weighted_inputs = tf.stack(inputs) * tf.reshape(tf.nn.softmax(self.pesos), [self.num_outputs, 1, 1])
+        weighted_inputs = tf.stack(inputs) * tf.reshape(tf.nn.softmax(self.weights), [self.num_outputs, 1, 1])
 
         return tf.reduce_sum(weighted_inputs, axis = 0)

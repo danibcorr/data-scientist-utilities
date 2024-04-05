@@ -13,16 +13,13 @@ import tensorflow as tf
 # --------------------------------------------------------------------------------------------
 
 
-class GCOptimizer(tf.keras.optimizers.Optimizer):
+class GCAdamW(tf.keras.optimizers.AdamW):
 
     """
-    Gradient Centralization Optimizer.
-
-    Example usage:
-        optimizer = GCOptimizer(tf.keras.optimizers.AdamW(learning_rate=0.001))
+    Gradient Centralization Optimizer for AdamW.
     """
 
-    def __init__(self, name="GCOptimizer", **kwargs):
+    def __init__(self, name = "GCAdamW", **kwargs):
 
         """
         Initializes the Gradient Centralization Optimizer.
