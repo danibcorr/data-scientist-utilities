@@ -7,7 +7,13 @@ Welcome to my toolbox for TensorFlow! This repository is a personal space where 
 # 🎨 Content
 
 - **data_augmentation:** A folder containing various data augmentation techniques.
+- **data_manipulation:** A folder containing tools and scripts for manipulating datasets.
+- **data_visualization:** A folder with tools for visualizing data in various formats.
 - **layers:** A folder containing layers/blocks useful for the development of Deep Learning models.
+- **losses:** A folder containing different loss functions used in training models.
+- **models:** A folder with pre-built models or scripts to build custom models.
+- **optimizers:** A folder containing different optimization algorithms for training models.
+- **schedulers:** A folder with learning rate schedulers to adjust the learning rate during training.
 - **utils:** A folder containing utilities required in the previous folders that can be used at a general level.
 
 *(As new tools, models, and techniques are added, this section will be updated to showcase the latest in the repository.)*

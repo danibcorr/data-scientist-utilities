@@ -5,6 +5,9 @@
 
 import os
 import matplotlib.pyplot as plt
+from sklearn.manifold import TSNE
+import seaborn as sns
+import pandas as pd
 
 
 # --------------------------------------------------------------------------------------------
@@ -12,7 +15,8 @@ import matplotlib.pyplot as plt
 # --------------------------------------------------------------------------------------------
 
 
-def show_class_frequency(data, x_label = "Type of pattern", y_label = "Frequency", title_name = None, save_fig = False, path = './Images', file_name = "freq.png"):
+def show_class_frequency(data, x_label = "Type of pattern", y_label = "Frequency", title_name = None,
+                         save_fig = False, path = './Images', file_name = "freq.png"):
 
     """
     This function displays a bar chart of the frequency of classes in the given data.
@@ -118,3 +122,56 @@ def show_history(history, model_name, plot_accuracy = False, save_fig = False, p
             plt.savefig(os.path.join(path, f'accuracy_{file_name}'))
 
         plt.show()
+
+
+def show_tsne_2d(data, labels, tsne_perplexity = 40, tsne_niter = 1000, tsne_random_state = 42,
+                 save_fig = False, path = './Images', file_name = "tsne.png"):
+
+    """
+    This function performs t-SNE (t-Distributed Stochastic Neighbor Embedding) on the input data and visualizes the results in a 2D scatter plot.
+
+    Parameters:
+    - data (numpy.ndarray): The input data to perform t-SNE on.
+    - labels (numpy.ndarray): The labels corresponding to the input data.
+    - tsne_perplexity (int, optional): The perplexity parameter for the t-SNE algorithm. Defaults to 40.
+    - tsne_niter (int, optional): The number of iterations for the t-SNE algorithm. Defaults to 1000.
+    - tsne_random_state (int, optional): The random state for the t-SNE algorithm. Defaults to 42.
+
+    Returns:
+    - numpy.ndarray: The 2D representation of the data after t-SNE.
+    """
+
+    # Perform t-SNE on the data
+    tsne = TSNE(n_components=2, verbose=1, perplexity=tsne_perplexity, n_iter=tsne_niter, random_state=tsne_random_state)
+    tsne_results_2D = tsne.fit_transform(data)
+
+    # Create a DataFrame to hold the t-SNE results and labels
+    df_show = pd.DataFrame()
+    df_show['T-SNE 2D First Component'] = tsne_results_2D[:, 0]
+    df_show['T-SNE 2D Second Component'] = tsne_results_2D[:, 1]
+    df_show['labels'] = labels
+
+    # Create a scatter plot of the t-SNE results
+    plt.figure(figsize=(16, 10))
+    ax = sns.scatterplot(
+        x="T-SNE 2D First Component", y="T-SNE 2D Second Component",
+        hue="labels",
+        style=df_show['labels'],
+        palette=sns.color_palette("hls", len(df_show['labels'].factorize()[1])),
+        data=df_show,
+        legend="full",
+        alpha=1
+    )
+
+    # Set the title and labels of the plot
+    plt.title("2D T-SNE Representation", fontweight='bold')
+    plt.xlabel('T-SNE 2D First Component', fontweight='bold')
+    plt.ylabel('T-SNE 2D Second Component', fontweight='bold')
+    plt.grid(True)
+
+    if save_fig:
+            
+        plt.savefig(os.path.join(path, file_name))
+
+    # Return the t-SNE results
+    return tsne_results_2
