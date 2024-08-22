@@ -2,19 +2,16 @@
 # LIBRARIES
 # --------------------------------------------------------------------------------------------
 
-
 import numpy as np
 import matplotlib.pyplot as plt
 from IPython.display import clear_output, display
 import ipywidgets as widgets
 
-
 # --------------------------------------------------------------------------------------------
 # FUNCTION DEFINITIONS
 # --------------------------------------------------------------------------------------------
 
-
-def balance_dataset(X, y):
+def balance_dataset(X: np.ndarray, y: np.ndarray) -> tuple:
 
     """
     Balances the dataset by undersampling it to match the class with the minimum number of samples.
@@ -40,8 +37,7 @@ def balance_dataset(X, y):
     # Return the balanced dataset
     return X[sample_indexes].astype('float32'), y[sample_indexes]
 
-
-def manual_relabeling_images(X, y, start_index = 0, num_rows = 5, num_columns = 5):
+def manual_relabeling_images(X: np.ndarray, y: np.ndarray, start_index: int = 0, num_rows: int = 5, num_columns: int = 5) -> None:
 
     """
     This function allows for manual relabeling of images.
@@ -116,7 +112,7 @@ def manual_relabeling_images(X, y, start_index = 0, num_rows = 5, num_columns = 
         display_widgets(start_index, num_rows, num_columns)
 
 
-    def on_next_button_clicked(b, num_rows = 5, num_columns = 5):
+    def on_next_button_clicked(b, num_rows: int = 5, num_columns: int = 5) -> None:
 
         """
         This function is called when the 'Next' button is clicked. It updates the start index and refreshes the image display.
@@ -133,7 +129,7 @@ def manual_relabeling_images(X, y, start_index = 0, num_rows = 5, num_columns = 
         display_images(start_index)
         
 
-    def on_previous_button_clicked(b, num_rows = 5, num_columns = 5):
+    def on_previous_button_clicked(b, num_rows: int = 5, num_columns: int = 5) -> None:
 
         """
         This function is called when the 'Previous' button is clicked. It updates the start index and refreshes the image display.
@@ -167,7 +163,7 @@ def manual_relabeling_images(X, y, start_index = 0, num_rows = 5, num_columns = 
         clear_output(wait = True)
         display_images(start_index)
 
-    def display_widgets(start_index, num_rows, num_columns):
+    def display_widgets(start_index: int, num_rows: int, num_columns: int) -> int:
 
         """
         This function displays the navigation and apply changes buttons.

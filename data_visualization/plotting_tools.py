@@ -2,21 +2,18 @@
 # LIBRARIES
 # --------------------------------------------------------------------------------------------
 
-
 import os
 import matplotlib.pyplot as plt
 from sklearn.manifold import TSNE
 import seaborn as sns
 import pandas as pd
 
-
 # --------------------------------------------------------------------------------------------
 # FUNCTION DEFINITIONS
 # --------------------------------------------------------------------------------------------
 
-
-def show_class_frequency(data, x_label = "Type of pattern", y_label = "Frequency", title_name = None,
-                         save_fig = False, path = './Images', file_name = "freq.png"):
+def show_class_frequency(data: pd.Series or pd.DataFrame, x_label: str = "Type of pattern", y_label: str = "Frequency", title_name: str = None,
+                         save_fig: bool = False, path: str = './Images', file_name: str = "freq.png")-> None:
 
     """
     This function displays a bar chart of the frequency of classes in the given data.
@@ -67,8 +64,7 @@ def show_class_frequency(data, x_label = "Type of pattern", y_label = "Frequency
     # Display the plot
     plt.show()
 
-
-def show_history(history, model_name, plot_accuracy = False, save_fig = False, path = './Images', file_name = "history.png"):
+def show_history(history, model_name: str, plot_accuracy: bool = False, save_fig: bool = False, path: str = './Images', file_name: str = "history.png"):
 
     """
     This function plots the training history of a model. It displays the loss history and optionally the accuracy history.
@@ -123,9 +119,8 @@ def show_history(history, model_name, plot_accuracy = False, save_fig = False, p
 
         plt.show()
 
-
-def show_tsne_2d(data, labels, tsne_perplexity = 40, tsne_niter = 1000, tsne_random_state = 42,
-                 save_fig = False, path = './Images', file_name = "tsne.png"):
+def show_tsne_2d(data: np.ndarray, labels: np.ndarray, tsne_perplexity: int = 40, tsne_niter: int = 1000, tsne_random_state: int = 42,
+                 save_fig: bool = False, path: str = './Images', file_name: str = "tsne.png"):
 
     """
     This function performs t-SNE (t-Distributed Stochastic Neighbor Embedding) on the input data and visualizes the results in a 2D scatter plot.

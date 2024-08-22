@@ -2,15 +2,12 @@
 # LIBRARIES
 # --------------------------------------------------------------------------------------------
 
-
 import numpy as np
 from numba import njit
-
 
 # --------------------------------------------------------------------------------------------
 # DEFINITIONS OF FUNCTIONS
 # --------------------------------------------------------------------------------------------
-
 
 @njit
 def flip_horizontal(data):
@@ -27,7 +24,6 @@ def flip_horizontal(data):
 
     return np.fliplr(data)
 
-
 @njit
 def flip_vertical(data):
 
@@ -43,7 +39,6 @@ def flip_vertical(data):
 
     return np.flipud(data)
 
-
 @njit
 def flip_both(data):
 
@@ -58,7 +53,6 @@ def flip_both(data):
     """
 
     return np.flipud(np.fliplr(data))
-
 
 @njit
 def custom_roll(array, shift, axis):
@@ -94,7 +88,6 @@ def custom_roll(array, shift, axis):
 
     return result
 
-
 @njit
 def horizontal_transition(image, num_displacements, shift_values):
 
@@ -117,7 +110,6 @@ def horizontal_transition(image, num_displacements, shift_values):
         result[i] = custom_roll(image, shift_values[i], axis=1)
 
     return result
-
 
 @njit
 def vertical_transition(image, num_displacements, shift_values):
