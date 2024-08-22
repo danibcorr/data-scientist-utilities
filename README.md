@@ -1,34 +1,34 @@
-**🛠️ TensorFlowUtilities Repo**
+# 🛠️ Data Scientist Utilities
 
-# 🚀 Summary
+## 🚀 Overview
 
-Welcome to my toolbox for TensorFlow! This repository is a personal space where I share unofficial implementations, including layers, models, data augmentation techniques, and more. The goal is to collaborate on practical solutions that I've found useful for my own projects with TensorFlow.
+Welcome to my Data Scientist toolbox! This repository serves as a personal collection of utilities and tools that I’ve developed and utilized throughout my work as a Data Scientist.
 
-# 🎨 Content
+## 🎨 Repository Contents
 
-- **data_augmentation:** A folder containing various data augmentation techniques.
-- **data_manipulation:** A folder containing tools and scripts for manipulating datasets.
-- **data_visualization:** A folder with tools for visualizing data in various formats.
-- **layers:** A folder containing layers/blocks useful for the development of Deep Learning models.
-- **losses:** A folder containing different loss functions used in training models.
-- **models:** A folder with pre-built models or scripts to build custom models.
-- **optimizers:** A folder containing different optimization algorithms for training models.
-- **schedulers:** A folder with learning rate schedulers to adjust the learning rate during training.
-- **utils:** A folder containing utilities required in the previous folders that can be used at a general level.
+- **`data_augmentation/`**: A collection of scripts and techniques for augmenting data, ideal for enhancing model robustness.
+- **`data_manipulation/`**: Tools and scripts for efficient dataset manipulation, cleaning, and transformation.
+- **`data_visualization/`**: A suite of tools for creating various types of data visualizations, aiding in data exploration and presentation.
 
-*(As new tools, models, and techniques are added, this section will be updated to showcase the latest in the repository.)*
+*Note: This repository is continuously evolving. New tools, models, and techniques will be added over time. Keep an eye on this section for the latest updates!*
 
-# ✨ Usage Instructions
+## ✨ How to Use
 
-1. Clone the repository to your local machine.
-2. Explore the different folders to discover the tools and techniques.
-3. Integrate the implementations into your TensorFlow project.
-4. If you find improvements or have suggestions, contribute to the repository!
+1. **Clone the Repository**:  
+   ```bash
+   git clone https://github.com/danibcorr/data-scientist-utilities.git
+   ```
+2. **Explore the Contents**:  
+   Browse through the different folders to discover the tools and techniques available.
+3. **Integrate into Your Projects**:  
+   Incorporate the implementations into your data science projects, especially those using TensorFlow or other ML frameworks.
+4. **Contribute**:  
+   If you identify areas for improvement or have suggestions, feel free to contribute to the repository!
 
-# 🌟 Contributions
+## 🌟 Contributions
 
-Contributions are welcome! If you have new tools, models, or techniques you'd like to share, I'd be delighted.
+Contributions are highly encouraged! If you’ve developed new tools, models, or techniques that you believe could benefit others, please don’t hesitate to share them. Your contributions will help enhance the toolbox for everyone.
 
-# 🤖 License
+## 🤖 License
 
-This project is distributed under the [MIT License](LICENSE). Feel free to play, modify, and share the code as you wish!
+This project is licensed under the [MIT License](LICENSE). You are free to use, modify, and distribute the code as you see fit. Enjoy experimenting and building with these tools!
