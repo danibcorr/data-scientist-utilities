@@ -16,13 +16,13 @@ def balance_dataset(X: np.ndarray, y: np.ndarray) -> tuple:
     """
     Balances the dataset by undersampling it to match the class with the minimum number of samples.
 
-    Parameters:
-    - X (numpy.ndarray): Input data, where each row is a sample and each column is a feature.
-    - y (numpy.ndarray): Labels corresponding to the input data.
+    Args:
+    	X (numpy.ndarray): Input data, where each row is a sample and each column is a feature.
+    	y (numpy.ndarray): Labels corresponding to the input data.
 
     Returns:
-    - X_balanced (numpy.ndarray): Balanced input data.
-    - y_balanced (numpy.ndarray): Labels corresponding to the balanced input data.
+    	X_balanced (numpy.ndarray): Balanced input data.
+    	y_balanced (numpy.ndarray): Labels corresponding to the balanced input data.
     """
 
     # Compute the number of samples in each class
@@ -42,9 +42,9 @@ def manual_relabeling_images(X: np.ndarray, y: np.ndarray, start_index: int = 0,
     """
     This function allows for manual relabeling of images.
 
-    Parameters:
-    - X (numpy.ndarray): The images to be relabeled.
-    - y (numpy.ndarray): The current labels of the images.
+    Args:
+    	X (numpy.ndarray): The images to be relabeled.
+    	y (numpy.ndarray): The current labels of the images.
     """
 
     # Replace these with your actual images
@@ -61,10 +61,10 @@ def manual_relabeling_images(X: np.ndarray, y: np.ndarray, start_index: int = 0,
         """
         This function displays a grid of images and allows for their labels to be changed.
 
-        Parameters:
-        - start_index (int): The index to start displaying the images from.
-        - num_rows (int): The number of rows in the grid.
-        - num_columns (int): The number of columns in the grid.
+        Args:
+        	start_index (int): The index to start displaying the images from.
+        	num_rows (int): The number of rows in the grid.
+        	num_columns (int): The number of columns in the grid.
         """
 
         for i in range(num_rows):
@@ -117,10 +117,10 @@ def manual_relabeling_images(X: np.ndarray, y: np.ndarray, start_index: int = 0,
         """
         This function is called when the 'Next' button is clicked. It updates the start index and refreshes the image display.
 
-        Parameters:
-        - b (Button): The button that was clicked.
-        - num_rows (int): The number of rows in the grid.
-        - num_columns (int): The number of columns in the grid.
+        Args:
+        	b (Button): The button that was clicked.
+        	num_rows (int): The number of rows in the grid.
+        	num_columns (int): The number of columns in the grid.
         """
 
         nonlocal start_index
@@ -134,10 +134,10 @@ def manual_relabeling_images(X: np.ndarray, y: np.ndarray, start_index: int = 0,
         """
         This function is called when the 'Previous' button is clicked. It updates the start index and refreshes the image display.
 
-        Parameters:
-        - b (Button): The button that was clicked.
-        - num_rows (int): The number of rows in the grid.
-        - num_columns (int): The number of columns in the grid.
+        Args:
+        	b (Button): The button that was clicked.
+        	num_rows (int): The number of rows in the grid.
+        	num_columns (int): The number of columns in the grid.
         """
 
         nonlocal start_index
@@ -155,8 +155,8 @@ def manual_relabeling_images(X: np.ndarray, y: np.ndarray, start_index: int = 0,
         """
         This function is called when the 'Apply Changes' button is clicked. It refreshes the image display.
 
-        Parameters:
-        - b (Button): The button that was clicked.
+        Args:
+        	b (Button): The button that was clicked.
         """
 
         # Refresh the image display
@@ -168,10 +168,10 @@ def manual_relabeling_images(X: np.ndarray, y: np.ndarray, start_index: int = 0,
         """
         This function displays the navigation and apply changes buttons.
 
-        Parameters:
-        - start_index (int): The index to start displaying the images from.
-        - num_rows (int): The number of rows in the grid.
-        - num_columns (int): The number of columns in the grid.
+        Args:
+        	start_index (int): The index to start displaying the images from.
+        	num_rows (int): The number of rows in the grid.
+        	num_columns (int): The number of columns in the grid.
         """
 
         previous_button = widgets.Button(description = "Previous")

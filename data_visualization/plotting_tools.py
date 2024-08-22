@@ -5,6 +5,7 @@
 import os
 import matplotlib.pyplot as plt
 from sklearn.manifold import TSNE
+from sklearn.metrics import confusion_matrix, roc_curve
 import seaborn as sns
 import pandas as pd
 
@@ -18,14 +19,14 @@ def show_class_frequency(data: pd.Series or pd.DataFrame, x_label: str = "Type o
     """
     This function displays a bar chart of the frequency of classes in the given data.
 
-    Parameters:
-    - data (pandas.Series or pandas.DataFrame): Input data to visualize. Expected to be a series or single-column dataframe.
-    - x_label (str, optional): Label for the x-axis. Defaults to "Type of pattern".
-    - y_label (str, optional): Label for the y-axis. Defaults to "Frequency".
-    - title_name (str, optional): Title for the plot. If None, no title is set. Defaults to None.
-    - save_fig (bool, optional): If True, the figure is saved to the specified path. Defaults to False.
-    - path (str, optional): Path where the figure is saved if save_fig is True. Defaults to './Images'.
-    - file_name (str, optional): Name of the file to save the figure as if save_fig is True. Defaults to "freq.png".
+    Args:
+    	data (pandas.Series or pandas.DataFrame): Input data to visualize. Expected to be a series or single-column dataframe.
+    	x_label (str, optional): Label for the x-axis. Defaults to "Type of pattern".
+    	y_label (str, optional): Label for the y-axis. Defaults to "Frequency".
+    	title_name (str, optional): Title for the plot. If None, no title is set. Defaults to None.
+    	save_fig (bool, optional): If True, the figure is saved to the specified path. Defaults to False.
+    	path (str, optional): Path where the figure is saved if save_fig is True. Defaults to './Images'.
+    	file_name (str, optional): Name of the file to save the figure as if save_fig is True. Defaults to "freq.png".
     """
 
     # Check if the specified path exists, if not, create it
@@ -64,18 +65,18 @@ def show_class_frequency(data: pd.Series or pd.DataFrame, x_label: str = "Type o
     # Display the plot
     plt.show()
 
-def show_history(history, model_name: str, plot_accuracy: bool = False, save_fig: bool = False, path: str = './Images', file_name: str = "history.png"):
+def show_history_model(history, model_name: str, plot_accuracy: bool = False, save_fig: bool = False, path: str = './Images', file_name: str = "history.png"):
 
     """
     This function plots the training history of a model. It displays the loss history and optionally the accuracy history.
 
-    Parameters:
-    - history (History): Training history of the model. This is typically the output of the `fit` method of a Keras model.
-    - model_name (str): Name of the model. This is used in the title of the plots and in the names of the saved plot images.
-    - plot_accuracy (bool, optional): Whether to plot accuracy as well. If True, a second plot showing the accuracy history is displayed. Defaults to False.
-    - save_fig (bool, optional): If True, the figure is saved to the specified path. Defaults to False.
-    - path (str, optional): Path where the plot images are saved. The directory is created if it does not exist. Defaults to './Images'.
-    - file_name (str, optional): Name of the file to save the figure as if save_fig is True. Defaults to "history.png".
+    Args:
+    	history (History): Training history of the model. This is typically the output of the `fit` method of a Keras model.
+    	model_name (str): Name of the model. This is used in the title of the plots and in the names of the saved plot images.
+    	plot_accuracy (bool, optional): Whether to plot accuracy as well. If True, a second plot showing the accuracy history is displayed. Defaults to False.
+    	save_fig (bool, optional): If True, the figure is saved to the specified path. Defaults to False.
+    	path (str, optional): Path where the plot images are saved. The directory is created if it does not exist. Defaults to './Images'.
+    	file_name (str, optional): Name of the file to save the figure as if save_fig is True. Defaults to "history.png".
     """
 
     # Check if the specified path exists, if not, create it
@@ -125,15 +126,15 @@ def show_tsne_2d(data: np.ndarray, labels: np.ndarray, tsne_perplexity: int = 40
     """
     This function performs t-SNE (t-Distributed Stochastic Neighbor Embedding) on the input data and visualizes the results in a 2D scatter plot.
 
-    Parameters:
-    - data (numpy.ndarray): The input data to perform t-SNE on.
-    - labels (numpy.ndarray): The labels corresponding to the input data.
-    - tsne_perplexity (int, optional): The perplexity parameter for the t-SNE algorithm. Defaults to 40.
-    - tsne_niter (int, optional): The number of iterations for the t-SNE algorithm. Defaults to 1000.
-    - tsne_random_state (int, optional): The random state for the t-SNE algorithm. Defaults to 42.
+    Args:
+    	data (numpy.ndarray): The input data to perform t-SNE on.
+    	labels (numpy.ndarray): The labels corresponding to the input data.
+    	tsne_perplexity (int, optional): The perplexity parameter for the t-SNE algorithm. Defaults to 40.
+    	tsne_niter (int, optional): The number of iterations for the t-SNE algorithm. Defaults to 1000.
+    	tsne_random_state (int, optional): The random state for the t-SNE algorithm. Defaults to 42.
 
     Returns:
-    - numpy.ndarray: The 2D representation of the data after t-SNE.
+    	numpy.ndarray: The 2D representation of the data after t-SNE.
     """
 
     # Perform t-SNE on the data
@@ -170,3 +171,66 @@ def show_tsne_2d(data: np.ndarray, labels: np.ndarray, tsne_perplexity: int = 40
 
     # Return the t-SNE results
     return tsne_results_2
+
+def show_confusion_matrix(y_test: pd.Series, y_pred: pd.Series, figsize: tuple = (10, 8)) -> None:
+
+    """
+    Displays a confusion matrix heatmap for the given true and predicted labels.
+    
+    Args:
+    	y_test (pd.Series): Actual labels of the test data.
+    	y_pred (pd.Series): Predicted labels by the model.
+    	figsize (tuple, optional): Figure size of the plot. Default is (10, 8).
+    
+    Returns:
+    	None: The function displays the plot and does not return any value.
+    """
+
+    plt.figure(figsize=figsize)
+    
+    # Generate the confusion matrix and display it as a heatmap
+    sns.heatmap(confusion_matrix(y_test, y_pred), annot=True, cmap='coolwarm', fmt='g')
+    
+    # Set plot title and labels
+    plt.title('Confusion Matrix')
+    plt.xlabel('Predicted Labels')
+    plt.ylabel('Actual Labels')
+    
+    # Display the plot
+    plt.show()
+
+def show_roc_curve(y_test: pd.Series, y_pred: pd.Series, figsize: tuple = (10, 8)) -> None:
+
+    """
+    Displays the ROC curve for the given true and predicted labels.
+    
+    Args:
+    	y_test (pd.Series): Actual labels of the test data.
+    	y_pred (pd.Series): Predicted probabilities or scores by the model.
+    	figsize (tuple, optional): Figure size of the plot. Default is (10, 8).
+    
+    Returns:
+    	None: The function displays the plot and does not return any value.
+    """
+
+    plt.figure(figsize=figsize)
+    
+    # Compute the false positive rate and true positive rate
+    fpr, tpr, _ = roc_curve(y_test, y_pred)
+    
+    # Plot the diagonal line representing a random classifier
+    plt.plot([0, 1], [0, 1], 'r--', label='Random Classifier')
+    
+    # Plot the ROC curve for the classifier
+    plt.plot(fpr, tpr, label='ROC Curve', color='blue')
+    
+    # Set plot title and labels
+    plt.title('ROC Curve')
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    
+    # Add a legend to the plot
+    plt.legend(loc='lower right')
+    
+    # Display the plot
+    plt.show()
