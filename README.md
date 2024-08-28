@@ -2,33 +2,34 @@
 
 ## 🚀 Overview
 
-Welcome to my Data Scientist toolbox! This repository serves as a personal collection of utilities and tools that I’ve developed and utilized throughout my work as a Data Scientist.
+Welcome to the **Data Scientist Utilities** repository! This repository is a carefully curated collection of tools and utilities that I've developed throughout my journey as a Data Scientist. Whether you're aiming to streamline data manipulation, elevate your data augmentation strategies, or craft stunning visualizations, you'll find valuable resources here to boost your productivity.
 
 ## 🎨 Repository Contents
 
-- **`data_augmentation/`**: A collection of scripts and techniques for augmenting data, ideal for enhancing model robustness.
-- **`data_manipulation/`**: Tools and scripts for efficient dataset manipulation, cleaning, and transformation.
-- **`data_visualization/`**: A suite of tools for creating various types of data visualizations, aiding in data exploration and presentation.
+Explore the core components of this repository:
 
-*Note: This repository is continuously evolving. New tools, models, and techniques will be added over time. Keep an eye on this section for the latest updates!*
+- **`data_augmentation/`**: Scripts and methods for augmenting datasets, designed to improve model robustness and performance across various scenarios.
+- **`data_manipulation/`**: A comprehensive set of tools for efficient data manipulation, including cleaning, transforming, and reshaping datasets to fit your needs.
+- **`data_visualization/`**: A collection of visualization tools to help you explore, analyze, and present your data in insightful and compelling ways.
 
-## ✨ How to Use
+*Note: This repository is continuously evolving, with new tools and updates being added regularly. Be sure to check back often for the latest enhancements!*
 
-1. **Clone the Repository**:  
+## ✨ Getting Started
+
+To start using these utilities, follow these steps:
+
+1. Install the package via pip:
+
    ```bash
-   git clone https://github.com/danibcorr/data-scientist-utilities.git
+   pip install datasu
    ```
-2. **Explore the Contents**:  
-   Browse through the different folders to discover the tools and techniques available.
-3. **Integrate into Your Projects**:  
-   Incorporate the implementations into your data science projects, especially those using TensorFlow or other ML frameworks.
-4. **Contribute**:  
-   If you identify areas for improvement or have suggestions, feel free to contribute to the repository!
 
-## 🌟 Contributions
+2. Explore the contents and integrate the tools into your projects to enhance your data science workflows.
 
-Contributions are highly encouraged! If you’ve developed new tools, models, or techniques that you believe could benefit others, please don’t hesitate to share them. Your contributions will help enhance the toolbox for everyone.
+## 🌟 Contributing
+
+Your contributions are invaluable in making this toolbox more robust and versatile! Whether you've developed new tools, discovered bugs, or have ideas for enhancements, feel free to open an issue or submit a pull request. Let's work together to expand this collection and support the data science community!
 
 ## 🤖 License
 
-This project is licensed under the [MIT License](LICENSE). You are free to use, modify, and distribute the code as you see fit. Enjoy experimenting and building with these tools!
+This project is licensed under the [MIT License](LICENSE). You're free to use, modify, and share the code. Happy coding, experimenting, and data exploration!

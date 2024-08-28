@@ -1,17 +1,9 @@
-# --------------------------------------------------------------------------------------------
-# LIBRARIES
-# --------------------------------------------------------------------------------------------
-
 import numpy as np
 from numba import njit
 
-# --------------------------------------------------------------------------------------------
-# DEFINITIONS OF FUNCTIONS
-# --------------------------------------------------------------------------------------------
 
 @njit
 def flip_horizontal(data):
-
     """
     Performs horizontal flipping of the input data.
 
@@ -24,9 +16,9 @@ def flip_horizontal(data):
 
     return np.fliplr(data)
 
+
 @njit
 def flip_vertical(data):
-
     """
     Performs vertical flipping of the input data.
 
@@ -39,9 +31,9 @@ def flip_vertical(data):
 
     return np.flipud(data)
 
+
 @njit
 def flip_both(data):
-
     """
     Performs flipping of the input data both horizontally and vertically.
 
@@ -54,9 +46,9 @@ def flip_both(data):
 
     return np.flipud(np.fliplr(data))
 
+
 @njit
 def custom_roll(array, shift, axis):
-
     """
     Rolls the elements of the array along a specified axis.
 
@@ -88,9 +80,9 @@ def custom_roll(array, shift, axis):
 
     return result
 
+
 @njit
 def horizontal_transition(image, num_displacements, shift_values):
-
     """
     Performs horizontal transition on the input image.
 
@@ -111,9 +103,9 @@ def horizontal_transition(image, num_displacements, shift_values):
 
     return result
 
+
 @njit
 def vertical_transition(image, num_displacements, shift_values):
-
     """
     Performs vertical transition on the input image.
 
